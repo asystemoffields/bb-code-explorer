@@ -5,7 +5,7 @@ including IBM's **`[[144,12,12]]` "gross code."** Build a code from two polynomi
 its qubit / Tanner layout on the torus, inject Pauli errors, and watch the syndrome.
 Everything is computed live in your browser over GF(2); nothing is sent anywhere.
 
-**Live:** _(deploy link TBD)_
+**Live:** https://asystemoffields.github.io/bb-code-explorer/
 
 ## Why this exists
 
