@@ -6,6 +6,7 @@
   <title>Bivariate Bicycle Code Explorer</title>
   <meta name="description" content="Interactive explorer for bivariate bicycle (qLDPC) quantum codes — including IBM's [[144,12,12]] gross code. Build a code from two polynomials, see its qubit layout, inject errors, watch the syndrome." />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚛️</text></svg>" />
+  <script>try{var t=localStorage.getItem('sciproj-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}</script>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
@@ -15,6 +16,7 @@
       <span class="subtitle">qLDPC codes you can poke — featuring IBM's <span class="mono">[[144,12,12]]</span> “gross code”</span>
     </div>
     <span class="spacer"></span>
+    <button class="btn sm" id="btn-theme" title="Theme" aria-label="Theme: auto. Click to change.">◐</button>
     <button class="btn sm" id="btn-help" aria-label="What is this? Open help">?</button>
   </header>
 
