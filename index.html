@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Bivariate Bicycle Code Explorer</title>
   <meta name="description" content="Interactive explorer for bivariate bicycle (qLDPC) quantum codes — including IBM's [[144,12,12]] gross code. Build a code from two polynomials, see its qubit layout, inject errors, watch the syndrome." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚛️</text></svg>" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
@@ -14,7 +15,7 @@
       <span class="subtitle">qLDPC codes you can poke — featuring IBM's <span class="mono">[[144,12,12]]</span> “gross code”</span>
     </div>
     <span class="spacer"></span>
-    <button class="btn sm" id="btn-help" title="What is this?">?</button>
+    <button class="btn sm" id="btn-help" aria-label="What is this? Open help">?</button>
   </header>
 
   <div id="app">
@@ -32,7 +33,7 @@
         <label for="in-b">B(x,y)</label>
         <input id="in-b" type="text" spellcheck="false" placeholder="y3 + x + x2" />
         <button class="btn" id="btn-build">Build code</button>
-        <p class="hint">Monomials in <span class="mono">x</span>,<span class="mono">y</span> over GF(2), e.g. <span class="mono">x3 + y + y2</span> (<span class="mono">1</span> = identity). Powers wrap mod ℓ (x) / m (y).</p>
+        <p class="hint">Monomials in <span class="mono">x</span>,<span class="mono">y</span> over GF(2), e.g. <span class="mono">x3 + y + y2</span> (<span class="mono">1</span> = identity); each term once (repeats cancel). Powers wrap mod ℓ (x) / m (y). Keep ℓ, m ≤ 24 and 2·ℓ·m ≲ 800.</p>
       </section>
 
       <section class="readout">
@@ -48,7 +49,7 @@
       </section>
 
       <section class="ctl">
-        <div class="row2"><label class="cbx"><input type="checkbox" id="tg-long" checked /> long-range edges</label></div>
+        <div class="row2"><label class="cbx"><input type="checkbox" id="tg-long" checked /> non-axis-local edges <span class="hint">(heuristic)</span></label></div>
         <button class="btn sm" id="btn-clear">Clear errors</button>
         <div class="synbox">
           <div class="kv"><span>injected errors</span><b id="rd-err">0</b></div>
@@ -59,7 +60,10 @@
     </aside>
 
     <main id="stage">
-      <canvas id="cv"></canvas>
+      <canvas id="cv" tabindex="0" role="application"
+        aria-label="Quantum code qubit grid. Focus and use arrow keys to move between data qubits, Enter or Space to cycle its error (none, X, Z, Y), Delete to clear all errors."
+        aria-describedby="howto"></canvas>
+      <div id="live" class="sr-only" aria-live="polite"></div>
       <div id="legend">
         <span><i class="dot l"></i> data L</span>
         <span><i class="dot r"></i> data R</span>
@@ -67,7 +71,7 @@
         <span><i class="chk z"></i> Z-check</span>
         <span class="fired"><i class="chk fired"></i> fired (syndrome)</span>
       </div>
-      <div id="howto" class="hint">Click a <b>data qubit</b> to cycle its error <span class="mono">none → X → Z → Y</span>; the stabilizer checks that detect it light up. Hover a <b>check</b> to see the six qubits it measures.</div>
+      <div id="howto" class="hint">Click a <b>data qubit</b> (or focus the grid and use <b>arrow keys</b> + <b>Enter</b>) to cycle its error <span class="mono">none → X → Z → Y</span>; the stabilizer checks that detect it light up. Hover a <b>check</b> to see the six qubits it measures.</div>
     </main>
   </div>
 
@@ -76,13 +80,13 @@
       <a href="https://arxiv.org/abs/2308.07915" target="_blank" rel="noopener">Bravyi et al., <i>Nature</i> 627, 778 (2024)</a>
       (arXiv:2308.07915). Distances <span class="mono">d</span> are the paper's published values.</span>
     <span class="spacer"></span>
-    <span>MIT-licensed · <a id="repo-link" href="#" target="_blank" rel="noopener">source</a></span>
+    <span>MIT-licensed · <a id="repo-link" href="https://github.com/asystemoffields/bb-code-explorer" target="_blank" rel="noopener">source</a></span>
   </footer>
 
-  <div id="help-modal" class="modal hidden">
+  <div id="help-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="help-title">
     <div class="modal-card">
-      <button class="x" id="help-close">×</button>
-      <h2>Bivariate bicycle codes, by hand</h2>
+      <button class="x" id="help-close" aria-label="Close help">×</button>
+      <h2 id="help-title">Bivariate bicycle codes, by hand</h2>
       <p><b>Quantum LDPC codes</b> are the leading route to low-overhead fault-tolerant
         quantum computers. <b>Bivariate bicycle (BB)</b> codes — like IBM's
         <span class="mono">[[144,12,12]]</span> “gross code,” the centerpiece of its 2029
@@ -94,13 +98,18 @@
         <span class="mono">H<sub>X</sub>=[A|B]</span> and
         <span class="mono">H<sub>Z</sub>=[Bᵀ|Aᵀ]</span>; there are
         <span class="mono">n=2ℓm</span> data qubits and
-        <span class="mono">k=n−rank H<sub>X</sub>−rank H<sub>Z</sub></span> logical qubits.</p>
+        <span class="mono">k=n−rank H<sub>X</sub>−rank H<sub>Z</sub></span> logical qubits.
+        (The gross code uses 144 data qubits + 144 check ancillas = 288 physical qubits — not
+        to be confused with the separate <span class="mono">[[288,12,18]]</span> code.)</p>
       <ul>
         <li>Each qubit is touched by exactly <b>6 checks</b> (3 X, 3 Z); each check measures <b>6 qubits</b>.</li>
         <li>An <b>X error</b> is caught by neighboring <b>Z-checks</b>; a <b>Z error</b> by <b>X-checks</b> (that's the syndrome).</li>
-        <li>Four short-range + two <b>long-range</b> edges per check — the long ones are why these codes are powerful and hard to draw.</li>
+        <li>In the paper's optimized bi-planar layout each check has four short-range + two long-range
+          edges. This explorer instead lays qubits on the raw ℓ×m torus, so the edge toggle uses a
+          simpler “a single step along one axis = local” rule — it won't reproduce the paper's exact
+          4+2 split (it's a visualization aid, not the paper's embedding).</li>
       </ul>
-      <p class="hint">Everything is computed live in your browser over GF(2). Nothing is sent anywhere.</p>
+      <p class="hint" id="help-params">Everything is computed live in your browser over GF(2). Nothing is sent anywhere.</p>
     </div>
   </div>
 
