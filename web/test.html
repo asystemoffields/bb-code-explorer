@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>running…</title></head>
+<body>
+<h1 id="status">running…</h1>
+<pre id="out"></pre>
+<script type="module">
+  import { runTests } from './js/bbcode.js';
+  try {
+    const res = runTests();
+    window.__RESULT = res;
+    document.title = res.allPass ? 'PASS' : 'FAIL';
+    document.getElementById('status').textContent = res.allPass ? 'ALL PASS' : 'FAIL';
+    document.getElementById('out').textContent = JSON.stringify(res.results, null, 2);
+  } catch (e) {
+    window.__RESULT = { error: String(e), stack: e && e.stack };
+    document.title = 'ERROR';
+    document.getElementById('status').textContent = 'ERROR';
+    document.getElementById('out').textContent = String(e) + '\n' + (e && e.stack);
+  }
+</script>
+</body>
+</html>
